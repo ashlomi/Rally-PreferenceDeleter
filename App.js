@@ -152,7 +152,7 @@ Ext.define('CustomApp', {
     _preferenceStoreLoaded: function(store, records) {
 
         var me = this;
-        
+
         if (records.length === 0) {
             Ext.Msg.alert('Preference Not Found', me._filterSearchString);
         }
@@ -169,12 +169,17 @@ Ext.define('CustomApp', {
                 Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
                 // console.log(me._foundPrefRecord);
 
+                if (me._deletePreferenceButton) {
+                    Ext.destroy(me._deletePreferenceButton);
+                }
+
                 me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
                     text: "Delete Preference",
                     handler: function() {
                         me._deletePreferenceHandler(record, me);
                     }
                 });
+
                 me.down('#filterValueContainer').add(me._deletePreferenceButton);
 
             }
