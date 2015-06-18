@@ -20,6 +20,10 @@ that shows the JSON contents of the Preference.
 
 You may then delete the Preference via the Delete button.
 
+Video illustrating usage:
+
+http://www.screencast.com/t/x9mDaFmi6f7k
+
 ## License
 
 This App is released under the MIT license.  See the file [LICENSE](./LICENSE) for the full text.
