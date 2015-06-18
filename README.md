@@ -9,7 +9,7 @@ This is a simple UI for finding and deleting Preferences (Rally Settings objects
 
 Grab the source code from:
 
-https://raw.githubusercontent.com/markwilliams970/Rally-ExampleApps/master/LongDropdownGrid/deploy/App-uncompressed.html
+https://github.com/markwilliams970/Rally-PreferenceDeleter/blob/master/deploy/App-uncompressed.html
 
 And install the App according to these directions.
 
