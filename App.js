@@ -153,6 +153,12 @@ Ext.define('CustomApp', {
 
         var me = this;
 
+        console.log(records.length);
+
+        if (records.length === 0) {
+            Ext.Msg.alert('Preference Not Found', me._filterSearchString);
+        }
+;
         Ext.Array.each(records, function(record) {
 
             var prefWorkspace = record.get('Workspace');
@@ -161,7 +167,8 @@ Ext.define('CustomApp', {
             if (prefWorkspaceRef === me._workspaceRef) {
                 me._foundPrefRecord = record;
                 me._filterValue = record.get('Value');
-                Ext.Msg.alert('Preference Found!', me._filterValue);
+                var preferenceName = record.get('Name');
+                Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
                 // console.log(me._foundPrefRecord);
 
                 me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
@@ -173,7 +180,6 @@ Ext.define('CustomApp', {
                 me.down('#filterValueContainer').add(me._deletePreferenceButton);
 
             }
-
         });
     }
 });
