@@ -3,7 +3,7 @@ Rally-ClearFilterPref
 
 This is a simple UI for finding and deleting Preferences (Rally Settings objects).
 
-![App Screenshot](https://raw.githubusercontent.com/markwilliams970/Rally-ExampleApps/master/LongDropdownGrid/images/screenshot2.png)
+![App Screenshot](https://raw.githubusercontent.com/markwilliams970/Rally-PreferenceDeleter/master/images/screenshot1.png)
 
 ## Usage:
 
