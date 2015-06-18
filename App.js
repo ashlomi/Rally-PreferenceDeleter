@@ -152,9 +152,7 @@ Ext.define('CustomApp', {
     _preferenceStoreLoaded: function(store, records) {
 
         var me = this;
-
-        console.log(records.length);
-
+        
         if (records.length === 0) {
             Ext.Msg.alert('Preference Not Found', me._filterSearchString);
         }
