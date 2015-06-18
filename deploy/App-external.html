@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rally-PreferenceDeleter</title>
+
+    <script type="text/javascript" src="https://rally1.rallydev.com/apps/2.0/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                Ext.define("CustomApp",{extend:"Rally.app.App",componentCls:"app",items:[{xtype:"container",itemId:"preferenceNameContainer",padding:"10",layout:{type:"vbox"},flex:1},{xtype:"container",itemId:"filterValueContainer",padding:"10"}],_workspaceObjectID:null,_workspaceRef:null,_typeFeature:null,_typeInitiative:null,_filterNameTextbox:null,_findPreferenceButton:null,_deletePreferenceButton:null,_preferencesStore:null,_foundPrefRecord:null,launch:function(){var me=this,currentContext=Rally.environment.getContext();me._user=currentContext.getUser(),me._workspaceObjectID=currentContext.getWorkspace().ObjectID,me._workspaceRef="/workspace/"+me._workspaceObjectID,this._buildUI(this)},_buildUI:function(me){me._filterNameTextbox=Ext.create("Rally.ui.TextField",{fieldLabel:"Preference Name:",width:400}),me.down("#preferenceNameContainer").add(me._filterNameTextbox),me._findPreferenceButton=Ext.create("Rally.ui.Button",{text:"Find Preference",handler:function(){me._queryFilterPref()}}),me.down("#preferenceNameContainer").add(me._findPreferenceButton)},_queryFilterPref:function(){var me=this;me._filterSearchString=me._filterNameTextbox.getValue(),me._preferencesStore=Ext.create("Rally.data.wsapi.Store",{model:"Preference",autoLoad:!0,fetch:!0,listeners:{scope:this,load:me._preferenceStoreLoaded},filters:[{property:"Name",operator:"=",value:me._filterSearchString}]})},_deletePreference:function(preferenceModel,scope){var me=scope;preferenceModel.destroy({callback:function(result,operation){operation.wasSuccessful()?Ext.create("Rally.ui.dialog.ConfirmDialog",{title:"Preference Deleted",message:"Preference Successfully Removed!",confirmLabel:"Ok"}):Ext.create("Rally.ui.dialog.ConfirmDialog",{title:"Preference Not Removed",message:"Error Deleting Preference!",confirmLabel:"Ok",listeners:{confirm:function(){}}})}})},_deletePreferenceHandler:function(record,scope){var me=scope,recordObjectID=record.get("ObjectID"),preferenceModel=Rally.data.ModelFactory.getModel({type:"Preference",scope:this,success:function(model,operation){model.load(recordObjectID,{scope:this,success:function(model,operation){var confirmLabel="Delete Preference Permanently",message="Really Delete Preference?";Ext.create("Rally.ui.dialog.ConfirmDialog",{message:message,confirmLabel:confirmLabel,listeners:{confirm:function(){me._deletePreference(model,me)}}})}})}})},_preferenceStoreLoaded:function(store,records){var me=this;Ext.Array.each(records,function(record){var prefWorkspace=record.get("Workspace"),prefWorkspaceRef=prefWorkspace._ref;prefWorkspaceRef===me._workspaceRef&&(me._foundPrefRecord=record,me._filterValue=record.get("Value"),Ext.Msg.alert("Preference Found!",me._filterValue),me._deletePreferenceButton=Ext.create("Rally.ui.Button",{text:"Delete Preference",handler:function(){me._deletePreferenceHandler(record,me)}}),me.down("#filterValueContainer").add(me._deletePreferenceButton))})}});
+
+            Rally.launchApp('CustomApp', {
+                name:"Rally-PreferenceDeleter",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+    <style type="text/css">
+        
+    </style>
+</head>
+<body>
+</body>
+</html>
