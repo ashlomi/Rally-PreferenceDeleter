@@ -165,33 +165,43 @@
         if (records.length === 0) {
             Ext.Msg.alert('Preference Not Found', me._filterSearchString);
         }
-;
+
         Ext.Array.each(records, function(record) {
 
+            // If it's a workspace-specific pref, make sure we're finding/deleting the one corresponding to our
+            // Currently-scoped workspace
+
             var prefWorkspace = record.get('Workspace');
-            var prefWorkspaceRef = prefWorkspace._ref;
 
-            if (prefWorkspaceRef === me._workspaceRef) {
+            if (!prefWorkspace) {
                 me._foundPrefRecord = record;
-                me._filterValue = record.get('Value');
-                var preferenceName = record.get('Name');
-                Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
-                // console.log(me._foundPrefRecord);
 
-                if (me._deletePreferenceButton) {
-                    Ext.destroy(me._deletePreferenceButton);
+            } else {
+
+                var prefWorkspaceRef = prefWorkspace._ref;
+
+                if (prefWorkspaceRef === me._workspaceRef) {
+                    me._foundPrefRecord = record;
                 }
-
-                me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
-                    text: "Delete Preference",
-                    handler: function() {
-                        me._deletePreferenceHandler(record, me);
-                    }
-                });
-
-                me.down('#filterValueContainer').add(me._deletePreferenceButton);
-
             }
+
+            me._filterValue = me._foundPrefRecord.get('Value');
+            var preferenceName = me._foundPrefRecord.get('Name');
+            Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
+            // console.log(me._foundPrefRecord);
+
+            if (me._deletePreferenceButton) {
+                Ext.destroy(me._deletePreferenceButton);
+            }
+
+            me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
+                text: "Delete Preference",
+                handler: function() {
+                    me._deletePreferenceHandler(me._foundPrefRecord, me);
+                }
+            });
+
+            me.down('#filterValueContainer').add(me._deletePreferenceButton);
         });
     }
 });
