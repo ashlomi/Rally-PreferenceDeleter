@@ -28,6 +28,7 @@ Ext.define('CustomApp', {
     _filterNameTextbox: null,
     _findPreferenceButton: null,
     _deletePreferenceButton: null,
+    _filterSearchString: null,
 
     _preferencesStore: null,
     _foundPrefRecord: null,
@@ -176,23 +177,28 @@ Ext.define('CustomApp', {
                 }
             }
 
-            me._filterValue = me._foundPrefRecord.get('Value');
-            var preferenceName = me._foundPrefRecord.get('Name');
-            Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
-            // console.log(me._foundPrefRecord);
+            if (!me._foundPrefRecord) {
+                Ext.Msg.alert('Preference Not Found: ' + me._filterSearchString);
+            } else {
+                me._filterValue = me._foundPrefRecord.get('Value');
+                var preferenceName = me._foundPrefRecord.get('Name');
+                Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
+                // console.log(me._foundPrefRecord);
 
-            if (me._deletePreferenceButton) {
-                Ext.destroy(me._deletePreferenceButton);
+                if (me._deletePreferenceButton) {
+                    Ext.destroy(me._deletePreferenceButton);
+                }
+
+                me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
+                    text: "Delete Preference",
+                    handler: function() {
+                        me._deletePreferenceHandler(me._foundPrefRecord, me);
+                    }
+                });
+
+                me.down('#filterValueContainer').add(me._deletePreferenceButton);
             }
 
-            me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
-                text: "Delete Preference",
-                handler: function() {
-                    me._deletePreferenceHandler(me._foundPrefRecord, me);
-                }
-            });
-
-            me.down('#filterValueContainer').add(me._deletePreferenceButton);
         });
     }
 });
