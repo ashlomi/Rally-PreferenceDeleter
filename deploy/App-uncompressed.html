@@ -23,8 +23,10 @@
         },
         {
             xtype: 'container',
-            itemId: 'filterValueContainer',
-            padding: '10'
+            itemId: 'prefsGridContainer',
+            padding: '10',
+            height: 800,
+            flex: 1
         }
     ],
 
@@ -41,6 +43,8 @@
 
     _preferencesStore: null,
     _foundPrefRecord: null,
+
+    _preferencesGrid: null,
 
     launch: function() {
         var me = this;
@@ -165,50 +169,100 @@
 
         if (records.length === 0) {
             Ext.Msg.alert('Preference Not Found', me._filterSearchString);
+        } else {
+            me._buildPreferencesGrid(records);
         }
 
+    },
+
+    _buildPreferencesGrid: function(records) {
+
+        var me = this;
+
+        var data = [];
         Ext.Array.each(records, function(record) {
 
-            // If it's a workspace-specific pref, make sure we're finding/deleting the one corresponding to our
-            // Currently-scoped workspace
+            var userName = "N/A";
+            var projectName = "N/A";
+            var workspaceName = "N/A";
 
-            var prefWorkspace = record.get('Workspace');
+            var userObject = record.get('User');
+            var projectObject = record.get('Project');
+            var workspaceObject = record.get('Workspace');
+            var appID = record.get('AppId');
 
-            if (!prefWorkspace) {
-                me._foundPrefRecord = record;
-
-            } else {
-
-                var prefWorkspaceRef = prefWorkspace._ref;
-
-                if (prefWorkspaceRef === me._workspaceRef) {
-                    me._foundPrefRecord = record;
-                }
+            if (userObject) {
+                userName = userObject._refObjectName;
             }
 
-            if (!me._foundPrefRecord) {
-                Ext.Msg.alert('Preference Not Found: ' + me._filterSearchString);
-            } else {
-                me._filterValue = me._foundPrefRecord.get('Value');
-                var preferenceName = me._foundPrefRecord.get('Name');
-                Ext.Msg.alert('Preference Found: ' + preferenceName, me._filterValue);
-                // console.log(me._foundPrefRecord);
-
-                if (me._deletePreferenceButton) {
-                    Ext.destroy(me._deletePreferenceButton);
-                }
-
-                me._deletePreferenceButton = Ext.create('Rally.ui.Button', {
-                    text: "Delete Preference",
-                    handler: function() {
-                        me._deletePreferenceHandler(me._foundPrefRecord, me);
-                    }
-                });
-
-                me.down('#filterValueContainer').add(me._deletePreferenceButton);
+            if (projectObject) {
+                projectName = projectObject._refObjectName;
             }
 
+            if (workspaceObject) {
+                workspaceName = workspaceObject._refObjectName;
+            }
+
+            data.push({
+                _ref: record.get('_ref'),
+                ObjectID: record.get('ObjectID'),
+                AppID: appID,
+                Name: record.get('Name'),
+                Workspace: workspaceName,
+                Project: projectName,
+                User: userName
+            });
         });
+
+        if ( me._preferencesGrid ) {
+            me._preferencesGrid.destroy();
+        }
+
+        me._preferencesGrid = me.down('#prefsGridContainer').add({
+            xtype: 'rallygrid',
+            store: Ext.create('Rally.data.custom.Store', {
+                data: data,
+                pageSize: 20
+            }),
+            columnCfgs: [
+                {
+                    text: 'Name', dataIndex: 'Name', flex: 1
+                },
+                {
+                    text: 'Preference OID', dataIndex: 'ObjectID'
+                },
+                {
+                    text: 'App OID', dataIndex: 'AppID'
+                },
+                {
+                    text: 'Workspace', dataIndex: 'Workspace', flex: 1
+                },
+                {
+                    text: 'Project', dataIndex: 'Project', flex: 1
+                },
+                {
+                    text: 'User', dataIndex: 'User', flex: 1
+                },
+                {
+                    text: 'Delete Preference',
+                    renderer: function (value, model, record) {
+                        var id = Ext.id();
+                        Ext.defer(function () {
+                            Ext.widget('button', {
+                                renderTo: id,
+                                text: 'Delete',
+                                width: 100,
+                                handler: function () {
+                                    me._deletePreferenceHandler(record, me);
+                                }
+                            });
+                        }, 50);
+                        return Ext.String.format('<div id="{0}"></div>', id);
+                    }
+                }
+            ]
+        });
+
     }
 });
 
