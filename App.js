@@ -154,6 +154,21 @@ Ext.define('CustomApp', {
 
     },
 
+    _viewPreferenceHandler: function(record, scope) {
+
+        var me = scope;
+        var preferenceString = record.get('Value');
+
+        var dialogTitle = "Preference Value";
+        var message = preferenceString;
+
+        Ext.create('Rally.ui.dialog.ConfirmDialog', {
+            message: preferenceString,
+            dialogTitle: dialogTitle,
+            confirmLabel: 'OK'
+        });
+    },
+
     _preferenceStoreLoaded: function(store, records) {
 
         var me = this;
@@ -176,11 +191,13 @@ Ext.define('CustomApp', {
             var userName = "N/A";
             var projectName = "N/A";
             var workspaceName = "N/A";
+            var valueString = "";
 
             var userObject = record.get('User');
             var projectObject = record.get('Project');
             var workspaceObject = record.get('Workspace');
             var appID = record.get('AppId');
+            var value = record.get('Value');
 
             if (userObject) {
                 userName = userObject._refObjectName;
@@ -194,11 +211,16 @@ Ext.define('CustomApp', {
                 workspaceName = workspaceObject._refObjectName;
             }
 
+            if (value) {
+                valueString = value;
+            }
+
             data.push({
                 _ref: record.get('_ref'),
                 ObjectID: record.get('ObjectID'),
                 AppID: appID,
                 Name: record.get('Name'),
+                Value: valueString,
                 Workspace: workspaceName,
                 Project: projectName,
                 User: userName
@@ -233,6 +255,23 @@ Ext.define('CustomApp', {
                 },
                 {
                     text: 'User', dataIndex: 'User', flex: 1
+                },
+                {
+                    text: 'View Preference',
+                    renderer: function (value, model, record) {
+                        var id = Ext.id();
+                        Ext.defer(function () {
+                            Ext.widget('button', {
+                                renderTo: id,
+                                text: 'View',
+                                width: 100,
+                                handler: function () {
+                                    me._viewPreferenceHandler(record, me);
+                                }
+                            });
+                        }, 50);
+                        return Ext.String.format('<div id="{0}"></div>', id);
+                    }
                 },
                 {
                     text: 'Delete Preference',
