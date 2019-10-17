@@ -59,6 +59,12 @@ Ext.define('CustomApp', {
         });
         me.down('#preferenceNameContainer').add(me._filterNameTextbox);
 
+        me._filterAppIdTextbox = Ext.create('Rally.ui.TextField', {
+            fieldLabel: 'Preference App Id:',
+            width: 400
+        });
+        me.down('#preferenceNameContainer').add(me._filterAppIdTextbox);
+
         me._findPreferenceButton = Ext.create('Rally.ui.Button', {
             text: "Find Preference",
             handler: function() {
@@ -72,11 +78,30 @@ Ext.define('CustomApp', {
 
         var me = this;
         me._filterSearchString = me._filterNameTextbox.getValue();
+        me._filterAppIdString = me._filterAppIdTextbox.getValue();
+
+        var filters = [];
+        if (me._filterSearchString) {
+            filters.push({
+                    property: 'Name',
+                    operator: '=',
+                    value: me._filterSearchString
+                });
+        }
+        if (me._filterAppIdString){
+            filters.push({
+                    property: 'AppId',
+                    operator: '=',
+                    value: me._filterAppIdString
+                });
+        }
 
         me._preferencesStore = Ext.create('Rally.data.wsapi.Store', {
             model: 'Preference',
             autoLoad: true,
             fetch: true,
+            pageSize: 2000,
+            limit: Infinity,
             listeners: {
                 scope: this,
                 load: me._preferenceStoreLoaded
